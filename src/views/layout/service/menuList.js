@@ -24,7 +24,12 @@ export const menuList = [
         title: '管控分布',
         icon: 'el-icon-s-help',
         index: 'control',
-      }
+      },
+      {
+        title: '核酸点分布',
+        icon: 'el-icon-office-building',
+        index: 'acid',
+      },
     ]
   },
   {
@@ -33,14 +38,19 @@ export const menuList = [
     index: '3',
     children: [
       {
-        title: '核酸点分布',
-        icon: 'el-icon-office-building',
-        index: 'acid',
-      },
-      {
         title: '核酸点管理',
         icon: 'el-icon-school',
         index: 'acidContrl',
+      },
+      {
+        title: '隔离点管理',
+        icon: 'el-icon-c-scale-to-original',
+        index: 'controlManage',
+      },
+      {
+        title: '管控点管理',
+        icon: 'el-icon-connection',
+        index: 'isolationManage',
       }
     ]
   },
@@ -83,7 +93,13 @@ export const menuList = [
     title: '辅助信息',
     icon: 'el-icon-tickets',
     index: 'assist',
-    children: []
+    children: [
+      // {
+      //   title: '感染人数分布',
+      //   icon: 'el-icon-s-custom',
+      //   index: 'infect',
+      // }
+    ]
   },
   {
     title: '用户信息管理',

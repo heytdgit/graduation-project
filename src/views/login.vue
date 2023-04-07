@@ -3,11 +3,11 @@
     <span class="login-title">重庆市新冠病毒疫情防控管理地理信息系统</span>
     <div class="login-form" v-if="!isRegister">
       <div class="form-title">请登录</div>
-      <el-form :model="loginForm">
-        <el-form-item>
+      <el-form :model="loginForm" :rules="rules" ref="login">
+        <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入账户"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input v-model="loginForm.password" placeholder="请输入密码" show-password></el-input>
         </el-form-item>
         <div style="margin: 12px 0">
@@ -16,22 +16,22 @@
         </div>
         <el-button type="primary" style="width: 100%" @click="login">登 录</el-button>
         <div class="login-tip">
-          没有账户？<span @click="isRegister = true">立即注册</span>
+          没有账户？<span @click="changeWay">立即注册</span>
         </div>
       </el-form>
     </div>
     <div class="login-form" v-else>
       <div class="form-title">请注册</div>
-      <el-form :model="registerFrom">
-        <el-form-item>
+      <el-form :model="registerFrom" :rules="rules" ref="register">
+        <el-form-item prop="username">
           <el-input v-model="registerFrom.username" placeholder="请输入注册账户"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input v-model="registerFrom.password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-button type="primary" style="width: 100%" @click="register">注 册</el-button>
         <div class="login-tip">
-          有账户？<span @click="isRegister = false">立即登录</span>
+          有账户？<span @click="changeWay">立即登录</span>
         </div>
       </el-form>
     </div>
@@ -63,29 +63,44 @@ export default {
     }
   },
   methods: {
+    /** 用户登录 */
     login() {
-      if (!this.loginForm.username || !this.loginForm.password) return
-      login(this.loginForm).then((res) => {
-        const token = res.data.token
-        this.$store.commit('changeLogin', token)
-        this.$router.replace('/')
-        this.$notify({
-          title: '成功',
-          message: '登陆成功',
-          type: 'success'
-        });
-      })
+      this.$refs['login'].validate((valid) => {
+          if (valid) {
+            login(this.loginForm).then((res) => {
+              const token = res.data.token
+              this.$store.commit('changeLogin', token)
+              this.$router.replace('/')
+            })
+          } else {
+            return false;
+          }
+      });
     },
+
+    /** 用户注册 */
     register() {
-      if(!this.registerForm.username || !this.registerForm.password) return
-      register(this.registerForm).then((res) => {
-        this.$notify({
-          title: '成功',
-          message: '注册成功，请输入账户和密码进行登录',
-          type: 'success'
+      this.$refs['register'].validate((valid) => {
+          if (valid) {
+            register(this.registerForm).then((res) => {
+              this.$notify({
+                title: '成功',
+                message: '注册成功，请输入账户和密码进行登录',
+                type: 'success'
+              });
+              this.isRegister = false
+            })
+          } else {
+            return false;
+          }
         });
-        this.isRegister = false
-      })
+      
+    },
+
+    /** 登录、注册切换 */
+    changeWay() {
+      this.isRegister = !this.isRegister
+      this.isRegister ? this.$refs['login'].resetFields() : this.$refs['register'].resetFields()
     }
   }
 }

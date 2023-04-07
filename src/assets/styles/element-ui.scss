@@ -2,7 +2,7 @@
   height: 34px;
 }
 
-.el-button--primary {
+.el-button {
   padding: 9px 20px;
 }
 
@@ -25,4 +25,16 @@
       margin-left: 1px;
     }
   }
+}
+
+.el-table--border .el-table__cell, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+  border-right: none;
+}
+
+.el-table--border, .el-table--group {
+  border: none;
+}
+
+.el-table--border::after, .el-table--group::after {
+  width: 0;
 }

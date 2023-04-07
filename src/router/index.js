@@ -37,7 +37,7 @@ const routes = [
       {
         path: 'acid',
         name: 'acid',
-        component: () => import('../views/manage/acid'),
+        component: () => import('../views/condition/acid'),
         meta: { title: '核酸点分布' },
       },
       {
@@ -45,6 +45,18 @@ const routes = [
         name: 'acidContrl',
         component: () => import('../views/manage/acidContrl'),
         meta: { title: '核酸点管理' },
+      },
+      {
+        path: 'controlManage',
+        name: 'controlManage',
+        component: () => import('../views/manage/controlManage'),
+        meta: { title: '隔离点管理' },
+      },
+      {
+        path: 'isolationManage',
+        name: 'isolationManage',
+        component: () => import('../views/manage/isolationManage'),
+        meta: { title: '管控点管理' },
       },
       {
         path: 'people',

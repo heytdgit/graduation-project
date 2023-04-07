@@ -9,15 +9,16 @@
         <el-input v-model="userForm.userName" placeholder="请输入用户账号"></el-input>
       </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" @click="searchUser"><i class="el-icon-search"></i> 查询</el-button>
-        <el-button type="primary" @click="addUser"><i class="el-icon-plus"></i> 添加</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="searchUser">查询</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addUser">添加</el-button>
+        <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格信息 -->
     <div style="margin-left: 10px; width: 98%">
       <el-table v-loading="loading" :data="tableData.slice((userForm.page - 1) * userForm.pageSize, userForm.page*userForm.pageSize)" :border="true">
-        <el-table-column prop="userId" label="序号" :align="'center'"/>
+        <el-table-column width="50px" prop="userId" label="序号" :align="'center'"/>
         <el-table-column prop="userName" label="用户名称" :align="'center'"/>
         <el-table-column prop="loginName" label="用户账号" :align="'center'" />
         <el-table-column prop="userSex" label="用户性别" :align="'center'">
@@ -53,7 +54,7 @@
       <el-pagination
         :align="'right'"
         :current-page.sync="userForm.page"
-        :page-sizes="[10, 20, 30, 40]"
+        :page-sizes="[10, 20, 30]"
         :page-size.sync="userForm.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         style="margin: 15px 0;"
@@ -71,7 +72,7 @@
           <el-input v-model="userInfo.userName" placeholder="请输入用户名称"></el-input>
         </el-form-item>
             <el-form-item label="密码" prop="loginPwd" v-if="title === '添加用户'">
-              <el-input v-model="userInfo.userPassord" placeholder="请输入用户密码"></el-input>
+              <el-input v-model="userInfo.loginPwd" placeholder="请输入用户密码"></el-input>
             </el-form-item>
         <el-form-item label="用户性别" prop="userSex">
           <el-select v-model="userInfo.userSex" placeholder="请选择用户性别" style="width: 380px">
@@ -124,16 +125,10 @@ export default {
         userPhone: '',
         userAddress: ''
       },
-        rules: {
-        loginName: [
-                    { required: true, message: "用户名称不能为空", trigger: "blur" }
-                ],
-        userName: [
-          {required: true, message: "用户名称不能为空", trigger: "blur"}
-        ],
-                loginPwd: [
-                    { required: true, message: "用户名称不能为空", trigger: "blur" }
-                ]
+      rules: {
+      loginName: [{ required: true, message: "用户账户不能为空", trigger: "blur" }],
+      userName: [{required: true, message: "用户名称不能为空", trigger: "blur"}],
+      loginPwd: [{ required: true, message: "用户密码不能为空", trigger: "blur" }]
       },
       tableData: []
     }
@@ -154,6 +149,15 @@ export default {
 
     /** 展示新增新用户弹窗 */
     addUser() {
+      this.userInfo = {
+        loginName: '',
+        userName: '',
+        loginPwd: '',
+        userSex: 0,
+        userEmail: '',
+        userPhone: '',
+        userAddress: ''
+      }
       this.title = "添加用户"
       this.showPop = true
     },
@@ -162,32 +166,31 @@ export default {
     editUser(row) {
       this.title = '编辑用户信息'
       this.showPop = true
-    // console.log(row)
-    this.userInfo = row
+      this.userInfo = row
     },
 
     /** 删除用户信息 */
     delUser(id) {
-        delUser(id).then( _ => {
-            this.$notify({
-                title: '修改成功',
-                message: '修改个人信息成功',
-                type: 'success'
-            });
-            this.getList()
-        })
+      delUser(id).then( _ => {
+        this.$notify({
+          title: '删除成功',
+          message: '删除用户信息成功',
+          type: 'success'
+        });
+        this.getList()
+      })
     },
 
     /** 提交新增或编辑表单 */
     submitForm() {
-      this.showPop = false
       if (this.title === '添加用户') {
         addUser(this.userInfo).then(_ => {
           this.$notify({
             title: '添加成功',
             message: '添加用户信息成功',
             type: 'success'
-        });
+          });
+          this.showPop = false
           this.getList()
         })
       } else {
@@ -197,6 +200,7 @@ export default {
             message: '修改用户信息成功',
             type: 'success'
           });
+          this.showPop = false
           this.getList()
         })
       }
@@ -219,11 +223,21 @@ export default {
     /** 根据用户名查询用户信息 */
     searchUser() {
       this.loading = true
-      getUserListByName(this.userInfo.userName, this.userForm.page, this.userForm.pageSize).then( res => {
+      getUserListByName(this.userForm.userName, this.userForm.page, this.userForm.pageSize).then( res => {
         this.tableData = res.data
         this.total = this.tableData.length
         this.loading = false
       })
+    },
+
+    /** 重置按钮 */
+    resetQuery() {
+      this.userForm = {
+        userName: '',
+        page: 1,
+        pageSize: 10
+      }
+      this.getList()
     }
   }
 }
