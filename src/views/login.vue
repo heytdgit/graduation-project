@@ -112,12 +112,15 @@ export default {
   height: 100%;
   padding-top: 30px;
   background: url("../assets/login/login.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
+  // background-size: 100%;
+  // background-repeat: no-repeat;
+  
+background-size:100% 100%;
+background-attachment:fixed;
   text-align: center;
 }
 .login-title {
-  color: #fff;
+  color: #273c75;
   font-size: 45px;
   font-weight: 600;
 }
