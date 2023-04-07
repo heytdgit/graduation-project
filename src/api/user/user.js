@@ -45,7 +45,8 @@ export function getUserInfo(loginName) {
 /** 根据用户名查询用户信息 */
 export function getUserListByName(userName, page, pageSize) {
   return request({
-    url: '/user/findByUserName?userName=' + userName + '&page=' + page + '&pageSize=' + pageSize,
-    method: 'get'
+    url: '/user/findByUserName?&page=' + page + '&pageSize=' + pageSize,
+    method: 'post',
+    data: {userName}
   })
 }

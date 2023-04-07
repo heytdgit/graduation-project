@@ -5,18 +5,18 @@
       <el-form-item label="用户名称">
         <el-input v-model="userForm.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
-      <el-form-item label="用户账号">
+      <!-- <el-form-item label="用户账号">
         <el-input v-model="userForm.userName" placeholder="请输入用户账号"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
-        <el-button type="primary"><i class="el-icon-search"></i> 查询</el-button>
+        <el-button type="primary" @click="searchUser"><i class="el-icon-search"></i> 查询</el-button>
         <el-button type="primary" @click="addUser"><i class="el-icon-plus"></i> 添加</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格信息 -->
     <div style="margin-left: 10px; width: 98%">
-      <el-table :data="tableData.slice((userForm.page - 1) * userForm.pageSize, userForm.page*userForm.pageSize)" :border="true">
+      <el-table v-loading="loading" :data="tableData.slice((userForm.page - 1) * userForm.pageSize, userForm.page*userForm.pageSize)" :border="true">
         <el-table-column prop="userId" label="序号" :align="'center'"/>
         <el-table-column prop="userName" label="用户名称" :align="'center'"/>
         <el-table-column prop="loginName" label="用户账号" :align="'center'" />
@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { getUserList, addUser, delUser, editUser } from '@/api/user/user'
+import { getUserList, addUser, delUser, editUser, getUserListByName } from '@/api/user/user'
 
 export default {
   name: 'user',
@@ -108,15 +108,16 @@ export default {
       title: '',
       showPop: false,
       total: 0,
+      loading: false,
       userForm: {
         page: 1,
         pageSize: 10,
         userName: '',
         userAccount: ''
       },
-        userInfo: {
-            loginName: '',
-            userName: '',
+      userInfo: {
+        loginName: '',
+        userName: '',
         loginPwd: '',
         userSex: 0,
         userEmail: '',
@@ -143,10 +144,12 @@ export default {
   methods: {
     /** 获取用户信息列表 */
     getList() {
+      this.loading = true
       getUserList(this.userForm.page, this.userForm.pageSize).then((res) => {
-                this.tableData = res.data
-                this.total = this.tableData.length
-            })
+        this.tableData = res.data
+        this.total = this.tableData.length
+        this.loading = false
+      })
     },
 
     /** 展示新增新用户弹窗 */
@@ -177,25 +180,25 @@ export default {
 
     /** 提交新增或编辑表单 */
     submitForm() {
-        this.showPop = false
-        if (this.title === '添加用户') {
-            addUser(this.userInfo).then(_ => {
-                this.$notify({
-                        title: '添加成功',
-                        message: '添加用户信息成功',
-                        type: 'success'
-                    });
-                    this.getList()
-            })
-        } else {
-            editUser(this.userInfo).then(_ => {
-                this.$notify({
-                        title: '修改成功',
-                        message: '修改用户信息成功',
-                        type: 'success'
-                    });
-                    this.getList()
-            })
+      this.showPop = false
+      if (this.title === '添加用户') {
+        addUser(this.userInfo).then(_ => {
+          this.$notify({
+            title: '添加成功',
+            message: '添加用户信息成功',
+            type: 'success'
+        });
+          this.getList()
+        })
+      } else {
+        editUser(this.userInfo).then(_ => {
+          this.$notify({
+            title: '修改成功',
+            message: '修改用户信息成功',
+            type: 'success'
+          });
+          this.getList()
+        })
       }
     },
 
@@ -204,14 +207,24 @@ export default {
       this.showPop = false,
       this.userInfo = {
         loginName: '',
-                    userName: '',
-                    loginPwd: '',
+        userName: '',
+        loginPwd: '',
         userSex: 0,
         userEmail: '',
         userPhone: '',
         userAddress: ''
       }
     },
+
+    /** 根据用户名查询用户信息 */
+    searchUser() {
+      this.loading = true
+      getUserListByName(this.userInfo.userName, this.userForm.page, this.userForm.pageSize).then( res => {
+        this.tableData = res.data
+        this.total = this.tableData.length
+        this.loading = false
+      })
+    }
   }
 }
 </script>
